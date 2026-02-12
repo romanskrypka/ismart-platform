@@ -1,354 +1,293 @@
-# Гайд по сквозной наблюдаемости (Observability) в ИИ-системах
+# Гайд по визуальной наблюдаемости (Visual Observability)
 
 ## Оглавление
 
-1.  [Философия: От «чёрного ящика» к «прозрачной коробке»](#1-философия-от-чёрного-ящика-к-прозрачной-коробке)
-2.  [Архитектурный паттерн: Pipeline Tap (Точка съёма)](#2-архитектурный-паттерн-pipeline-tap-точка-съёма)
-3.  [Уровень 1: Наблюдаемость в Django через логирование](#3-уровень-1-наблюдаемость-в-django-через-логирование)
-    -   [3.1. Настройка структурированного логирования](#31-настройка-структурированного-логирования)
-    -   [3.2. Middleware для трассировки запросов](#32-middleware-для-трассировки-запросов)
-    -   [3.3. Декоратор для логирования функций](#33-декоратор-для-логирования-функций)
-4.  [Уровень 2: Наблюдаемость ИИ-пайплайнов с Langfuse](#4-уровень-2-наблюдаемость-ии-пайплайнов-с-langfuse)
-5.  [Уровень 3: Наблюдаемость мультиагентных систем](#5-уровень-3-наблюдаемость-мультиагентных-систем)
+1.  [Философия: От логов к визуальному контролю](#1-философия-от-логов-к-визуальному-контролю)
+2.  [Уровень 1: Визуальный контроль в Django Admin](#2-уровень-1-визуальный-контроль-в-django-admin)
+    -   [2.1. Модель данных для хранения трейсов](#21-модель-данных-для-хранения-трейсов)
+    -   [2.2. Декоратор для записи шагов в БД](#22-декоратор-для-записи-шагов-в-бд)
+    -   [2.3. Визуализация в Django Admin](#23-визуализация-в-django-admin)
+3.  [Уровень 2: Django Debug Toolbar для контроля в реальном времени](#3-уровень-2-django-debug-toolbar-для-контроля-в-реальном-времени)
+4.  [Уровень 3: Langfuse UI для визуализации ИИ-пайплайнов](#4-уровень-3-langfuse-ui-для-визуализации-ии-пайплайнов)
+5.  [Уровень 4: Визуализация траекторий мультиагентных систем](#5-уровень-4-визуализация-траекторий-мультиагентных-систем)
 6.  [Взаимодействие с ИИ: Промпты для Cursor](#6-взаимодействие-с-ии-промпты-для-cursor)
-7.  [Приложение: Правило для `.cursorrules`](#7-приложение-правило-для-cursorrules)
+7.  [Приложение: Чек-лист визуального контроля](#7-приложение-чек-лист-визуального-контроля)
 
 ---
 
-## 1. Философия: От «чёрного ящика» к «прозрачной коробке»
+## 1. Философия: От логов к визуальному контролю
 
-Большие системы, особенно с ИИ-компонентами, часто превращаются в «чёрный ящик». Вы подаёте данные на вход, получаете результат на выходе, но что происходит внутри — загадка. Качество результата падает, а найти причину невозможно. Проблема в том, что вы теряете **наблюдаемость** — способность понимать внутреннее состояние системы по её внешним выходам.
+Проблема текстовых логов в том, что они остаются просто текстом в консоли. Вы не можете «увидеть» данные, сравнить их, проследить их трансформацию. Чтобы решить вашу задачу — **видеть глазами, что отдаётся и что получается**, — мы смещаем фокус с *логирования* на *визуальный контроль*.
 
-Наша цель — превратить «чёрный ящик» в **«прозрачную коробку» (Glassbox)**. Мы должны иметь возможность в любой момент времени увидеть, как данные преобразуются на каждом шаге, от первоначального запроса до финального ответа. Это достигается через **сквозную трассировку** (end-to-end tracing).
+Наша цель — построить **Панель управления процессом**, где каждый запуск бизнес-процесса или ИИ-пайплайна оставляет визуальный след, который можно изучить.
 
-| Подход «Чёрный ящик» | Подход «Прозрачная коробка» |
+| Подход «Текстовые логи» | Подход «Визуальный контроль» |
 |---|---|
-| Логируется только ошибка в конце | Логируется **вход и выход каждого шага** |
-| Непонятно, на каком этапе исказились данные | Видна вся цепочка преобразований |
-| Отладка занимает дни | Отладка занимает минуты |
-| Низкое доверие к системе | Высокое доверие и полный контроль |
+| Данные в неструктурированном тексте | Данные в структурированных полях в UI |
+| Нужно вручную искать `trace_id` в консоли | Все шаги сгруппированы в один трейс в админке |
+| Сложно увидеть, как изменился JSON | Можно визуально сравнить поля «Вход» и «Выход» |
+| **Результат:** вы читаете логи | **Результат:** вы **видите** данные |
 
 ---
 
-## 2. Архитектурный паттерн: Pipeline Tap (Точка съёма)
+## 2. Уровень 1: Визуальный контроль в Django Admin
 
-Представьте ваш процесс обработки данных как конвейер (pipeline). Чтобы понять, что происходит на конвейере, мы устанавливаем «точки съёма» (Taps) после каждого важного шага. Каждая такая точка — это функция или декоратор, который перехватывает данные, логирует их и передаёт дальше без изменений.
+Для стандартной бизнес-логики (не ИИ) мы создадим простую, но мощную систему отслеживания прямо в админке Django. Каждый сложный процесс будет записывать свою историю в базу данных, которую вы сможете просмотреть в удобном интерфейсе.
 
-**Пример пайплайна RAG (Retrieval-Augmented Generation):**
+### 2.1. Модель данных для хранения трейсов
 
-`Пользовательский запрос` → **[TAP 1]** → `Поисковый запрос к БД` → **[TAP 2]** → `Найденные фрагменты (контекст)` → **[TAP 3]** → `Промпт для LLM` → **[TAP 4]** → `Ответ от LLM` → **[TAP 5]** → `Финальный ответ пользователю`
+Создадим две модели: `PipelineTrace` для всего процесса и `PipelineStep` для каждого шага внутри него.
 
-Каждый `[TAP]` — это место, где мы сохраняем входные и выходные данные. Это позволяет нам в любой момент восстановить всю цепочку и понять, где произошла ошибка. Например, если финальный ответ нерелевантен, мы можем посмотреть на `[TAP 3]` и увидеть, что в контекст попали не те фрагменты, а затем на `[TAP 2]`, чтобы понять, почему поиск отработал неправильно.
-
----
-
-## 3. Уровень 1: Наблюдаемость в Django через логирование
-
-Для не-ИИ частей системы (стандартные CRUD, бизнес-логика) можно реализовать наблюдаемость с помощью встроенных инструментов Django и Python.
-
-### 3.1. Настройка структурированного логирования
-
-Первый шаг — настроить логирование так, чтобы оно было машиночитаемым (например, в JSON) и содержало уникальный ID для каждого запроса.
-
-**`settings.py`:**
+**`core/models.py`:**
 
 ```python
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "json": {
-            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
-            "format": "%(asctime)s %(name)s %(levelname)s %(message)s %(trace_id)s",
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "json",
-        },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "INFO",
-    },
-}
-```
-
-### 3.2. Middleware для трассировки запросов
-
-Создадим Middleware, которое будет генерировать `trace_id` для каждого входящего запроса и добавлять его в логи.
-
-**`core/middleware.py`:**
-
-```python
+from django.db import models
 import uuid
-import logging
 
-class RequestTracingMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
+class PipelineTrace(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255, help_text="Название всего процесса, например, 'Обработка заказа #123'")
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __call__(self, request):
-        trace_id = str(uuid.uuid4())
-        request.trace_id = trace_id
-        
-        logger = logging.getLogger(__name__)
-        logger.info(
-            f"Request started: {request.method} {request.path}",
-            extra={
-                "trace_id": trace_id,
-                "request_input": request.GET or request.POST
-            }
-        )
-        
-        response = self.get_response(request)
-        
-        logger.info(
-            f"Request finished: {response.status_code}",
-            extra={
-                "trace_id": trace_id,
-                "response_output": response.content.decode("utf-8", "ignore")[:500]
-            }
-        )
-        
-        return response
+    def __str__(self):
+        return f"Трейс: {self.name}"
+
+class PipelineStep(models.Model):
+    trace = models.ForeignKey(PipelineTrace, related_name='steps', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, help_text="Название шага, например, 'Валидация данных'")
+    input_data = models.JSONField(default=dict, blank=True, help_text="Данные на входе шага")
+    output_data = models.JSONField(default=dict, blank=True, help_text="Данные на выходе шага")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"Шаг: {self.name}"
 ```
 
-### 3.3. Декоратор для логирования функций
+### 2.2. Декоратор для записи шагов в БД
 
-Создадим декоратор, который будет работать как `Pipeline Tap` для любой функции, логируя её входные аргументы и выходной результат.
+Теперь создадим декоратор, который будет автоматически создавать объекты `PipelineStep`.
 
 **`core/decorators.py`:**
 
 ```python
-import logging
 from functools import wraps
+from .models import PipelineStep
 
-def log_pipeline_step(func):
-    """Декоратор для логирования входа и выхода функции."""
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        logger = logging.getLogger(func.__module__)
-        
-        # Пытаемся достать trace_id из request, если он есть
-        trace_id = "N/A"
-        if args and hasattr(args[0], 'trace_id'):
-            trace_id = args[0].trace_id
-
-        logger.info(
-            f"Pipeline step started: {func.__name__}",
-            extra={
-                "trace_id": trace_id,
-                "step_input": {"args": args, "kwargs": kwargs}
-            }
-        )
-        
-        result = func(*args, **kwargs)
-        
-        logger.info(
-            f"Pipeline step finished: {func.__name__}",
-            extra={
-                "trace_id": trace_id,
-                "step_output": result
-            }
-        )
-        return result
-    return wrapper
+def record_step(step_name):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(trace, *args, **kwargs):
+            # Первым аргументом в функцию всегда передаётся объект PipelineTrace
+            input_data = {"args": args, "kwargs": kwargs}
+            
+            result = func(trace, *args, **kwargs)
+            
+            PipelineStep.objects.create(
+                trace=trace,
+                name=step_name,
+                input_data=input_data,
+                output_data=result
+            )
+            return result
+        return wrapper
+    return decorator
 ```
 
 **Пример использования в `services.py`:**
 
 ```python
-from .decorators import log_pipeline_step
+from .models import PipelineTrace
+from .decorators import record_step
 
-@log_pipeline_step
-def process_order(order_data):
-    # ... какая-то логика ...
-    processed_data = order_data.copy()
-    processed_data["status"] = "processed"
-    return processed_data
+class OrderService:
+    def process_new_order(self, order_data):
+        # 1. Создаём основной трейс для всего процесса
+        trace = PipelineTrace.objects.create(name=f"Обработка заказа #{order_data.get('id')}")
+        
+        # 2. Вызываем шаги, передавая им trace
+        validated_data = self.validate_order(trace, order_data)
+        payment_result = self.process_payment(trace, validated_data)
+        return payment_result
+
+    @record_step("Шаг 1: Валидация заказа")
+    def validate_order(self, trace, data):
+        # ... логика валидации ...
+        return {"validated": True, "data": data}
+
+    @record_step("Шаг 2: Обработка платежа")
+    def process_payment(self, trace, data):
+        # ... логика платежа ...
+        return {"status": "success", "transaction_id": "xyz-123"}
 ```
-_# 4. Уровень 2: Наблюдаемость ИИ-пайплайнов с Langfuse
 
-Стандартного логирования недостаточно для сложных ИИ-пайплайнов (RAG, цепочки вызовов LLM). Здесь нам нужен специализированный инструмент, который умеет строить деревья вызовов (трейсы). Мы будем использовать **Langfuse** — open-source платформу для наблюдаемости LLM-приложений. Она позволяет визуализировать всю цепочку, включая вызовы моделей, и анализировать задержки и стоимость.
+### 2.3. Визуализация в Django Admin
 
-**Как это работает:**
+Чтобы это было удобно смотреть, настроим админку.
 
-1.  **Self-hosted Langfuse:** Вы запускаете Langfuse локально через Docker. Это даёт полный контроль над данными.
-2.  **SDK:** В Django-проект добавляется `langfuse` SDK.
-3.  **Декоратор `@observe`:** Вы оборачиваете каждую функцию в вашем ИИ-пайплайне этим декоратором. Он автоматически перехватывает вход/выход, время выполнения, ошибки и отправляет в Langfuse.
-
-**Пример RAG-пайплайна с Langfuse:**
+**`core/admin.py`:**
 
 ```python
-from langfuse import observe
-from langfuse.client import Langfuse
+from django.contrib import admin
+from .models import PipelineTrace, PipelineStep
+from django.utils.html import format_html
+import json
 
-langfuse = Langfuse() # Инициализация клиента
+class PipelineStepInline(admin.TabularInline):
+    model = PipelineStep
+    fields = ('name', 'formatted_input', 'formatted_output', 'created_at')
+    readonly_fields = fields
+    can_delete = False
+    extra = 0
 
-@observe(name="rag-pipeline")
-def handle_user_query(query: str):
-    search_query = generate_search_query(query)
-    context = find_relevant_chunks(search_query)
-    llm_response = answer_with_context(query, context)
-    return llm_response
+    def formatted_input(self, obj):
+        return format_html("<pre>{}</pre>", json.dumps(obj.input_data, indent=2, ensure_ascii=False))
+    formatted_input.short_description = "Входные данные"
 
-@observe(name="step-1-generate-search-query")
-def generate_search_query(query: str) -> str:
-    # Логика преобразования запроса пользователя в поисковый запрос
-    return f"search for {query}"
+    def formatted_output(self, obj):
+        return format_html("<pre>{}</pre>", json.dumps(obj.output_data, indent=2, ensure_ascii=False))
+    formatted_output.short_description = "Выходные данные"
 
-@observe(name="step-2-find-relevant-chunks")
-def find_relevant_chunks(search_query: str) -> list:
-    # Логика поиска в векторной БД
-    return ["chunk 1...", "chunk 2..."]
-
-@observe(name="step-3-answer-with-context", as_type="generation")
-def answer_with_context(query: str, context: list) -> str:
-    # Вызов LLM с промптом, включающим query и context
-    # as_type="generation" говорит Langfuse, что это вызов LLM
-    # для отслеживания токенов и стоимости
-    return "Final answer from LLM."
-
-# Запуск
-handle_user_query("What is observability?")
+@admin.register(PipelineTrace)
+class PipelineTraceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'created_at')
+    inlines = [PipelineStepInline]
+    readonly_fields = ('id', 'name', 'created_at')
 ```
 
-**Результат в Langfuse UI:**
-
-Вы увидите красивое дерево (трейс), где `rag-pipeline` — это корневой элемент, а вложенные вызовы — его дочерние элементы. Вы сможете кликнуть на каждый шаг и увидеть его входные и выходные данные.
-
-![Пример трейса в Langfuse](https://langfuse.com/images/docs/trace-complex.png)
+**Результат:** Теперь в админке вы можете зайти в любой `PipelineTrace` и увидеть все его шаги, а на каждом шаге — **визуально сравнить JSON-объекты на входе и выходе**.
 
 ---
 
-## 5. Уровень 3: Наблюдаемость мультиагентных систем
+## 3. Уровень 2: Django Debug Toolbar для контроля в реальном времени
 
-Мультиагентные системы — самый сложный случай для отладки. Агенты вызывают друг друга, используют инструменты, формируют «мысли». Здесь критически важно видеть не просто вход/выход, а всю **траекторию рассуждений** каждого агента.
+Для отладки в процессе разработки нет ничего лучше **Django Debug Toolbar**. Эта панель появляется на каждой странице в режиме `DEBUG=True` и даёт мгновенный визуальный срез всего, что произошло при обработке запроса.
 
-Мы можем расширить наш подход с Langfuse, используя вложенные трейсы для каждого агента и его инструментов.
+**Что вы можете увидеть глазами:**
 
-**Пример с CrewAI и Langfuse:**
+-   **SQL-запросы:** Все запросы к базе данных, их количество и время выполнения. Вы сразу видите медленные запросы.
+-   **Request/Response:** Все заголовки, GET/POST параметры, данные сессии и куки.
+-   **Templates:** Какие шаблоны были использованы и с каким контекстом.
+-   **Cache:** Какие данные были взяты из кэша, а какие нет.
 
-Представим Crew из двух агентов: `Researcher` и `Writer`.
+Это идеальный инструмент для локальной разработки, чтобы «видеть» работу стандартных компонентов Django без необходимости писать специальный код.
+
+---
+
+## 4. Уровень 3: Langfuse UI для визуализации ИИ-пайплайнов
+
+Когда в дело вступают LLM, RAG и другие ИИ-компоненты, нам нужен более специализированный инструмент. **Langfuse** — это open-source платформа, которая предоставляет именно тот **визуальный интерфейс**, который вам нужен для контроля над ИИ.
+
+Забудьте про логи в консоли. Каждый вызов LLM или RAG-цепочки превращается в интерактивный трейс в веб-интерфейсе Langfuse.
+
+**Что вы видите глазами в Langfuse UI:**
+
+-   **Дерево вызовов:** Слева вы видите полную иерархию вашего пайплайна. Каждый шаг (генерация, поиск, эмбеддинг) — это отдельный узел. Вы сразу видите последовательность и вложенность операций.
+-   **Вход и Выход:** Справа, для каждого шага, вы видите **фактические данные**. Для шага генерации это будет полный промпт на входе и полный ответ LLM на выходе. Для шага поиска — поисковый запрос и найденные фрагменты.
+-   **Метаданные и метрики:** Вы видите, какая модель использовалась, сколько токенов было потрачено, какова стоимость и задержка.
+
+**Пример визуального трейса в Langfuse:**
+
+*Ниже представлен скриншот, иллюстрирующий, как выглядит трейс RAG-пайплайна в Langfuse. Слева — дерево вызовов, справа — конкретные данные входа и выхода для шага генерации.* 
+
+<img src="/home/ubuntu/upload/search_images/Ne4Q0bp96j4O.png" alt="Langfuse Trace View" width="800"/>
+
+**Как этого достичь — декоратор `@observe`:**
+
+Инструментация кода минимальна. Вместо нашего `@record_step` мы используем декоратор `@observe` от Langfuse.
 
 ```python
-from langfuse import observe
-from crewai import Agent, Task, Crew
+from langfuse import Langfuse
+from langfuse.decorators import observe
 
-# Оборачиваем выполнение задачи в декоратор @observe
-@observe(name="crew-execution")
-def run_crew():
-    # ... определение агентов и задач ...
+langfuse = Langfuse()
 
-    researcher = Agent(
-        role='Senior Researcher',
-        goal='Uncover groundbreaking technologies',
-        # ...
-    )
+@observe()
+def process_rag_query(user_query):
+    search_query = generate_search_query(user_query)
+    context = find_relevant_chunks(search_query)
+    answer = answer_with_context(user_query, context)
+    return answer
 
-    writer = Agent(
-        role='Content Strategist',
-        goal='Craft compelling content on tech advancements',
-        # ...
-    )
+@observe(as_type="generation")
+def answer_with_context(query, context):
+    # ... вызов LLM с промптом, содержащим query и context ...
+    return llm_response
 
-    task1 = Task(description='Investigate the latest AI trends', agent=researcher)
-    task2 = Task(description='Write a blog post on AI trends', agent=writer)
-
-    crew = Crew(agents=[researcher, writer], tasks=[task1, task2])
-    result = crew.kickoff()
-    return result
-
-# Теперь нам нужно инструментировать внутренности CrewAI или агентов
-# Это можно сделать, обернув их методы или используя callback-и
-
-# Пример с кастомным агентом, который использует Langfuse
-class TracedAgent(Agent):
-    @observe(name="agent-execution")
-    def execute_task(self, task, context):
-        # Логируем мысли агента перед вызовом LLM
-        thought_process = f"I need to accomplish: {task.description}. Context: {context}"
-        langfuse.span(name="thought", input=thought_process)
-
-        # Выполнение задачи
-        result = super().execute_task(task, context)
-
-        return result
+# ... и так далее для других функций
 ```
 
-**Что мы получим в Langfuse:**
+После запуска этого кода вы заходите в UI Langfuse и видите полный визуальный отчёт по каждому вызову `process_rag_query`.
 
--   **Верхнеуровневый трейс:** `crew-execution`.
--   **Вложенные спаны:** `agent-execution` для каждого агента.
--   **Еще более глубокие спаны:** `thought` (мысли агента), `tool-call` (вызов инструмента), `llm-generation` (вызов LLM).
+---
 
-Это позволяет нам полностью реконструировать, что делал каждый агент, о чем он «думал», какие инструменты использовал и что ему ответила модель на каждом шаге. Это превращает отладку из гадания в анализ логов.
+## 5. Уровень 4: Визуализация траекторий мультиагентных систем
+
+Мультиагентные системы — самый сложный случай для отладки. Агенты могут вызывать друг друга, использовать инструменты, ошибаться и исправляться. Понять их логику по текстовым логам практически невозможно.
+
+Langfuse решает и эту проблему, позволяя **визуализировать граф рассуждений** агента.
+
+**Что вы видите глазами в Langfuse UI для агентов:**
+
+-   **Граф выполнения:** Вы видите схему, показывающую, как агент двигался от стартовой точки к результату, какие инструменты он вызывал и в какой последовательности.
+-   **Траектория мыслей:** Для каждого шага в графе вы можете посмотреть, о чём «думал» агент, какой промпт он сформировал для себя или для вызова другого агента/инструмента.
+-   **Вход/Выход каждого шага:** Как и в обычном пайплайне, вы видите конкретные данные, с которыми оперировал агент на каждом шаге.
+
+**Пример визуализации графа агента в Langfuse:**
+
+*На скриншоте ниже показан граф выполнения агента (Node display) и детали одного из шагов. Вы можете визуально проследить путь агента: `start` -> `chatbot` -> `tools` -> `agent` -> `end`.* 
+
+<img src="/home/ubuntu/upload/search_images/PbEFnpBr1qoE.png" alt="Langfuse Agent Graph View" width="800"/>
+
+Этот уровень визуализации позволяет вам не просто видеть результат, а понимать **почему** агент пришёл именно к такому результату, находя ошибки в его логике или инструментах.
 
 ---
 
 ## 6. Взаимодействие с ИИ: Промпты для Cursor
 
-Чтобы ИИ-ассистент (Cursor) следовал этим принципам, ему нужно давать чёткие инструкции. Используйте следующие промпты:
+Чтобы ИИ-ассистент внедрял эти практики визуального контроля, используйте следующие промпты.
 
-### Промпт 1: Создание декоратора для логирования
+### Промпт 1: Создание системы трейсинга в Django Admin
 
-> Создай в файле `core/decorators.py` декоратор `@log_pipeline_step`. Он должен:
-> 1.  Принимать на вход любую функцию.
-> 2.  Перед вызовом функции логировать её имя и все переданные аргументы (`args` и `kwargs`) с уровнем `INFO`.
-> 3.  В `extra`-параметры лога добавлять `trace_id`, который он должен попытаться извлечь из первого аргумента функции (если это объект `request`).
-> 4.  После вызова функции логировать её имя и возвращаемый результат с уровнем `INFO` и тем же `trace_id`.
-> 5.  Использовать стандартный `logging` и `functools.wraps`.
+> Создай систему визуального трейсинга в Django. 
+> 1.  В файле `core/models.py` создай две модели: `PipelineTrace` (с полями `id`, `name`, `created_at`) и `PipelineStep` (с полями `trace` (FK к PipelineTrace), `name`, `input_data` (JSON), `output_data` (JSON), `created_at`).
+> 2.  В файле `core/admin.py` создай `PipelineStepInline` (TabularInline) для отображения шагов внутри `PipelineTraceAdmin`. Используй `format_html` и `json.dumps` для красивого отображения JSON-полей `input_data` и `output_data` прямо в админке.
+> 3.  Зарегистрируй `PipelineTraceAdmin`.
 
-### Промпт 2: Применение декоратора к сервисному слою
+### Промпт 2: Создание и применение декоратора `@record_step`
 
-> Проанализируй файл `services.py`. Примени декоратор `@log_pipeline_step` ко всем публичным методам (тем, что не начинаются с `_`) в каждом классе этого файла. Импортируй декоратор из `core.decorators`.
+> 1.  В файле `core/decorators.py` создай декоратор `@record_step(step_name)`. Он должен принимать имя шага, а сама декорируемая функция должна принимать первым аргументом объект `trace` (экземпляр `PipelineTrace`).
+> 2.  Декоратор должен создавать объект `PipelineStep`, записывая в него `trace`, `step_name`, входные аргументы функции в `input_data` и результат функции в `output_data`.
+> 3.  Теперь открой `services.py` и примени этот декоратор ко всем методам сервиса `OrderService`, кроме `process_new_order`. Метод `process_new_order` должен создавать `PipelineTrace` и передавать его в вызываемые методы.
 
-### Промпт 3: Инструментация ИИ-пайплайна с Langfuse
+### Промпт 3: Инструментация ИИ-пайплайна с Langfuse для визуализации
 
-> У меня есть функция `process_rag_query`, которая выполняет RAG-пайплайн. Мне нужно инструментировать её с помощью Langfuse для полной наблюдаемости.
-> 1.  Разбей функцию `process_rag_query` на 3 отдельные функции-шага:
->     -   `generate_search_query(query)`
->     -   `find_relevant_chunks(search_query)`
->     -   `answer_with_context(query, context)`
-> 2.  Оберни каждую из этих 4 функций (включая родительскую `process_rag_query`) декоратором `@observe` из библиотеки `langfuse`.
-> 3.  Для функции `answer_with_context` добавь в декоратор параметр `as_type="generation"`.
-> 4.  В начале файла импортируй `observe` и создай экземпляр клиента `langfuse = Langfuse()`.
-
-### Промпт 4: Требование наблюдаемости при рефакторинге
-
-> Рефакторизуй этот код. Вынеси бизнес-логику из view в отдельный сервисный класс `OrderService` в файле `services.py`. Каждый публичный метод в новом сервисе должен быть обёрнут в декоратор `@log_pipeline_step` для обеспечения наблюдаемости.
+> Мне нужно визуализировать работу RAG-пайплайна в Langfuse UI. Возьми функцию `process_rag_query` и сделай следующее:
+> 1.  Разбей её на 3 отдельные функции: `generate_search_query`, `find_relevant_chunks`, `answer_with_context`.
+> 2.  Оберни каждую из этих 4 функций (включая родительскую) декоратором `@observe` из библиотеки `langfuse`.
+> 3.  Убедись, что входы и выходы каждой функции — это простые типы данных (строки, словари), чтобы они корректно отобразились в Langfuse UI.
 
 ---
 
-## 7. Приложение: Правило для `.cursorrules`
+## 7. Приложение: Чек-лист визуального контроля
 
-Чтобы закрепить практику наблюдаемости на уровне проекта, добавьте следующее правило в ваш файл `.cursorrules`.
+Используйте этот чек-лист, чтобы убедиться, что вы можете «видеть» работу вашей системы на всех уровнях.
 
-```yaml
-- name: EnforceObservability
-  description: "Все публичные методы в сервисах и агентах должны быть декорированы для логирования."
-  rule: "Каждый публичный метод (не начинающийся с '_') в любом файле, находящемся в директориях `services/` или `agents/`, ДОЛЖЕН иметь декоратор `@log_pipeline_step` или `@observe`."
-  good_example: |
-    # services/payment_service.py
-    from core.decorators import log_pipeline_step
-
-    class PaymentService:
-        @log_pipeline_step
-        def process_payment(self, amount, currency):
-            # ... logic ...
-            return {"status": "success"}
-
-  bad_example: |
-    # services/payment_service.py
-
-    class PaymentService:
-        def process_payment(self, amount, currency): # Отсутствует декоратор
-            # ... logic ...
-            return {"status": "success"}
-
-  why_is_it_important: "Без этого правила мы теряем наблюдаемость. Мы не можем отследить, какие данные вошли в функцию и какие вышли, что делает отладку почти невозможной. Это правило гарантирует, что каждый критический шаг бизнес-логики оставляет след в логах."
-```
-
-Это правило заставит ИИ-ассистента автоматически добавлять декораторы ко всему новому коду в указанных директориях, поддерживая систему «прозрачной» по мере её роста.
+| Уровень | Контроль | Статус (Да/Нет) |
+|---|---|:---:|
+| **Локальная разработка** | **Django Debug Toolbar** установлен и активен на страницах? | ☐ |
+| | Я вижу SQL-запросы и данные запроса/ответа в панели? | ☐ |
+| **Бизнес-логика** | Модели `PipelineTrace` и `PipelineStep` созданы и смигрированы? | ☐ |
+| | Я вижу трейсы процессов в **Django Admin**? | ☐ |
+| | Внутри трейса я вижу шаги с отформатированными **входными и выходными JSON**? | ☐ |
+| | Все ключевые многошаговые сервисы инструментированы декоратором `@record_step`? | ☐ |
+| **ИИ-пайплайны (RAG, LLM)** | **Langfuse** установлен и настроен (переменные окружения)? | ☐ |
+| | Я могу зайти в **Langfuse UI** и вижу свой проект? | ☐ |
+| | Все функции, вызывающие LLM, и их родительские функции обёрнуты в `@observe`? | ☐ |
+| | В Langfuse UI я вижу **дерево вызовов** для моих ИИ-пайплайнов? | ☐ |
+| | Для каждого шага я вижу **фактический промпт (вход)** и **ответ LLM (выход)**? | ☐ |
+| **Мультиагентные системы** | Для каждого агента и его инструментов настроена интеграция с Langfuse? | ☐ |
+| | В Langfuse UI я вижу **граф выполнения** агента? | ☐ |
+| | Я могу кликнуть на узел графа и увидеть **мысли агента** и данные, с которыми он работал? | ☐ |
