@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UserProfile>
+    <!-- Блок 1: Общая информация -->
+    <General>
+        <Name>Роман</Name>
+        <Role>Фрилансер, Продакт Менеджер</Role>
+        <ExperienceYears>10</ExperienceYears>
+        <EnglishLevel>Базовый</EnglishLevel>
+        <PreferredLanguage>русский</PreferredLanguage>
+    </General>
+
+    <!-- Блок 2: Технический стек -->
+    <TechnicalStack>
+        <Languages>
+            <Language priority="1">Python</Language>
+            <Language priority="2">JavaScript</Language>
+        </Languages>
+        <Frameworks>
+            <Framework>Django</Framework>
+            <Framework>N8n</Framework>
+        </Frameworks>
+        <Databases>
+            <Database usage="MVP">SQLite</Database>
+            <Database usage="Production">PostgreSQL</Database>
+        </Databases>
+        <ORM>Нет предпочтений</ORM>
+        <CICD>Нет предпочтений</CICD>
+        <Containerization preference="low" reason="Нехватка места на диске">Docker</Containerization>
+        <CloudProviders>
+            <Provider>Alibaba Cloud</Provider>
+        </CloudProviders>
+        <Monitoring>Не используется</Monitoring>
+        <PackageManagers>
+            <Manager>pip</Manager>
+            <Manager>npm</Manager>
+        </PackageManagers>
+    </TechnicalStack>
+
+    <!-- Блок 3: Стиль разработки и предпочтения -->
+    <DevelopmentStyle>
+        <Architecture preference="microservices">Предпочитает микросервисы, но не против монолита</Architecture>
+        <Typing>Зависит от проекта</Typing>
+        <Paradigm>Смешанный (ООП, Функциональный)</Paradigm>
+        <CodeComments>Предпочитает подробные комментарии</CodeComments>
+        <NamingConvention>Придерживается нотаций конкретного языка (snake_case, camelCase)</NamingConvention>
+        <FunctionLength>Нет строгих ограничений, главное - функциональность</FunctionLength>
+        <Abstractions>Умеренное использование</Abstractions>
+    </DevelopmentStyle>
+
+    <!-- Блок 4: AI и LLM -->
+    <AIPreferences>
+        <ModelTypes>Использует локальные и облачные модели</ModelTypes>
+        <Providers>
+            <Provider>Alibaba Cloud</Provider>
+            <Provider>OpenAI</Provider>
+        </Providers>
+        <LocalSLM>Планирует использовать</LocalSLM>
+        <AITools>
+            <Tool>Cursor</Tool>
+        </AITools>
+        <AgentFrameworks plan="future_use">
+            <Framework>LangChain</Framework>
+            <Framework>CrewAI</Framework>
+            <Framework>AutoGen</Framework>
+            <Framework>Собственные разработки</Framework>
+        </AgentFrameworks>
+        <CodeGenerationTrust>В основном доверяет, но иногда перепроверяет</CodeGenerationTrust>
+    </AIPreferences>
+
+    <!-- Блок 5: Текущие проекты -->
+    <Projects>
+        <Project name="ismart-platform">
+            <Description>Платформа для автоматизации процессов и создания АРМ (Автоматизированное Рабочее Место) с ИИ.</Description>
+            <Team>Работает один, считает Cursor основным помощником.</Team>
+        </Project>
+        <Project name="Трансформация Ритейл Логистик">
+            <Description>Создание АРМ и автоматизация через ИИ, ИИ-агентов и мультиагентные системы.</Description>
+        </Project>
+        <Methodology>
+            <Method>Agile</Method>
+            <Method>Kanban</Method>
+        </Methodology>
+    </Projects>
+
+    <!-- Блок 6: Среда разработки -->
+    <DevelopmentEnvironment>
+        <IDEs>
+            <IDE>Cursor</IDE>
+            <IDE>VS Code</IDE>
+        </IDEs>
+        <OS>
+            <System usage="MVP">Windows</System>
+            <System usage="Primary">Ubuntu</System>
+        </OS>
+        <TerminalMultiplexers>Не использует, но рассматривает</TerminalMultiplexers>
+        <Shells>
+            <Shell>bash</Shell>
+            <Shell>PowerShell</Shell>
+        </Shells>
+    </DevelopmentEnvironment>
+
+    <!-- Блок 7: Рабочий процесс с ИИ-ассистентом -->
+    <Workflow>
+        <ResponseStyle>Предпочитает развёрнутые ответы с объяснениями</ResponseStyle>
+        <InteractionStyle>Предпочитает, чтобы ИИ сначала задавал уточняющие вопросы</InteractionStyle>
+        <DelegatedTasks>
+            <Task>Генерация кода</Task>
+            <Task>Рефакторинг</Task>
+            <Task>Документация (с последующей проверкой)</Task>
+            <Task>Архитектура</Task>
+            <Task>Отладка</Task>
+        </DelegatedTasks>
+        <ExecutionStyle>Предпочитает пошаговое выполнение (микрошаги)</ExecutionStyle>
+    </Workflow>
+
+    <!-- Блок 8: Ценности и принципы -->
+    <Principles>
+        <TechnicalDebt>Старается не создавать</TechnicalDebt>
+        <ToolingPreference>Предпочитает open-source решения</ToolingPreference>
+        <TechnologyAvoidance>
+            <Technology reason="Нехватка места на диске">Docker</Technology>
+        </TechnologyAvoidance>
+        <CodePriorities>
+            <Priority>Производительность</Priority>
+            <Priority>Расширяемость</Priority>
+        </CodePriorities>
+    </Principles>
+</UserProfile>
+
