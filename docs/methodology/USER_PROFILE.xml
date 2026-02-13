@@ -1,129 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<UserProfile>
-    <!-- Блок 1: Общая информация -->
-    <General>
-        <Name>Роман</Name>
-        <Role>Фрилансер, Продакт Менеджер</Role>
-        <ExperienceYears>10</ExperienceYears>
-        <EnglishLevel>Базовый</EnglishLevel>
-        <PreferredLanguage>русский</PreferredLanguage>
-    </General>
+<USER_PROFILE>
+  <!--
+    Адаптированный профиль пользователя для проекта iSmart Platform.
+    Версия: 2.0
+    Дата: 13.02.2026
+    Назначение: Этот документ является единым источником правды о целях, техническом стеке и методологиях, 
+    применяемых в проекте iSmart Platform. Он служит основным конфигурационным файлом для ИИ-агентов (Cursor).
+  -->
 
-    <!-- Блок 2: Технический стек -->
-    <TechnicalStack>
-        <Languages>
-            <Language priority="1">Python</Language>
-            <Language priority="2">JavaScript</Language>
-        </Languages>
-        <Frameworks>
-            <Framework>Django</Framework>
-            <Framework>N8n</Framework>
-        </Frameworks>
-        <Databases>
-            <Database usage="MVP">SQLite</Database>
-            <Database usage="Production">PostgreSQL</Database>
-        </Databases>
-        <ORM>Нет предпочтений</ORM>
-        <CICD>Нет предпочтений</CICD>
-        <Containerization preference="low" reason="Нехватка места на диске">Docker</Containerization>
-        <CloudProviders>
-            <Provider>Alibaba Cloud</Provider>
-        </CloudProviders>
-        <Monitoring>Не используется</Monitoring>
-        <PackageManagers>
-            <Manager>pip</Manager>
-            <Manager>npm</Manager>
-        </PackageManagers>
-    </TechnicalStack>
-
-    <!-- Блок 3: Стиль разработки и предпочтения -->
-    <DevelopmentStyle>
-        <Architecture preference="microservices">Предпочитает микросервисы, но не против монолита</Architecture>
-        <Typing>Зависит от проекта</Typing>
-        <Paradigm>Смешанный (ООП, Функциональный)</Paradigm>
-        <CodeComments>Предпочитает подробные комментарии</CodeComments>
-        <NamingConvention>Придерживается нотаций конкретного языка (snake_case, camelCase)</NamingConvention>
-        <FunctionLength>Нет строгих ограничений, главное - функциональность</FunctionLength>
-        <Abstractions>Умеренное использование</Abstractions>
-    </DevelopmentStyle>
-
-    <!-- Блок 4: AI и LLM -->
-    <AIPreferences>
-        <ModelTypes>Использует локальные и облачные модели</ModelTypes>
-        <Providers>
-            <Provider>Alibaba Cloud</Provider>
-            <Provider>OpenAI</Provider>
-        </Providers>
-        <LocalSLM>Планирует использовать</LocalSLM>
-        <AITools>
-            <Tool>Cursor</Tool>
-        </AITools>
-        <AgentFrameworks plan="future_use">
-            <Framework>LangChain</Framework>
-            <Framework>CrewAI</Framework>
-            <Framework>AutoGen</Framework>
-            <Framework>Собственные разработки</Framework>
-        </AgentFrameworks>
-        <CodeGenerationTrust>В основном доверяет, но иногда перепроверяет</CodeGenerationTrust>
-    </AIPreferences>
-
-    <!-- Блок 5: Текущие проекты -->
-    <Projects>
-        <Project name="ismart-platform">
-            <Description>Платформа для автоматизации процессов и создания АРМ (Автоматизированное Рабочее Место) с ИИ.</Description>
-            <Team>Работает один, считает Cursor основным помощником.</Team>
-        </Project>
-        <Project name="Трансформация Ритейл Логистик">
-            <Description>Создание АРМ и автоматизация через ИИ, ИИ-агентов и мультиагентные системы.</Description>
-        </Project>
-        <Methodology>
-            <Method>Agile</Method>
-            <Method>Kanban</Method>
-        </Methodology>
-    </Projects>
-
-    <!-- Блок 6: Среда разработки -->
-    <DevelopmentEnvironment>
-        <IDEs>
-            <IDE>Cursor</IDE>
-            <IDE>VS Code</IDE>
-        </IDEs>
-        <OS>
-            <System usage="MVP">Windows</System>
-            <System usage="Primary">Ubuntu</System>
-        </OS>
-        <TerminalMultiplexers>Не использует, но рассматривает</TerminalMultiplexers>
-        <Shells>
-            <Shell>bash</Shell>
-            <Shell>PowerShell</Shell>
-        </Shells>
-    </DevelopmentEnvironment>
-
-    <!-- Блок 7: Рабочий процесс с ИИ-ассистентом -->
-    <Workflow>
-        <ResponseStyle>Предпочитает развёрнутые ответы с объяснениями</ResponseStyle>
-        <InteractionStyle>Предпочитает, чтобы ИИ сначала задавал уточняющие вопросы</InteractionStyle>
-        <DelegatedTasks>
-            <Task>Генерация кода</Task>
-            <Task>Рефакторинг</Task>
-            <Task>Документация (с последующей проверкой)</Task>
-            <Task>Архитектура</Task>
-            <Task>Отладка</Task>
-        </DelegatedTasks>
-        <ExecutionStyle>Предпочитает пошаговое выполнение (микрошаги)</ExecutionStyle>
-    </Workflow>
-
-    <!-- Блок 8: Ценности и принципы -->
-    <Principles>
-        <TechnicalDebt>Старается не создавать</TechnicalDebt>
-        <ToolingPreference>Предпочитает open-source решения</ToolingPreference>
-        <TechnologyAvoidance>
-            <Technology reason="Нехватка места на диске">Docker</Technology>
-        </TechnologyAvoidance>
-        <CodePriorities>
-            <Priority>Производительность</Priority>
-            <Priority>Расширяемость</Priority>
-        </CodePriorities>
-    </Principles>
-</UserProfile>
-
+  <!-- БАЗОВЫЙ УРОВЕНЬ: Кто мы и к чему стремимся -->
+  <BASIC_PROFILE>
+    <ROLE>
+      <TITLE>Продакт-менеджер, фрилансер</TITLE>
+      <EXPERIENCE>10+ лет в разработке ПО и управлении проектами</EXPERIENCE>
+      <SPECIALIZATION>Фокус на создании вертикальных ИИ-решений и трансформации бизнеса</SPECIALIZATION>
+    </ROLE>
+    
+    <COMMUNICATION>
+      <PREFERRED_LANGUAGE>Русский</PREFERRED_LANGUAGE>
+      <STYLE>
+        <DESCRIPTION>Профессиональный, развернутый стиль с фокусом на ясность и точность. ИИ-агент должен задавать уточняющие вопросы перед выполнением сложных задач и разбивать работу на микрошаги.</DESCRIPTION>
+      </STYLE>
+    </COMMUNICATION>
+    
+    <PRINCIPLES>
+      <PRINCIPLE name="ZERO_TECH_DEBT">Нулевая терпимость к техническому долгу. Код и документация должны быть чистыми и поддерживаемыми.</PRINCIPLE>
+      <PRINCIPLE name="DOCUMENTATION_FIRST">Каждое архитектурное решение и бизнес-процесс должны быть задокументированы ДО реализации.</PRINCIPLE>
+      <PRINCIPLE name="VERTICAL_FOCUS">Приоритет отдается вертикальным решениям, полностью решающим узкую отраслевую задачу, а не созданию горизонтальных платформ.</PRINCIPLE>
+    </PRINCIPLES>
+  </BASIC_PROFILE>
+  
+  <!-- ТЕХНИЧЕСКИЙ УРОВЕНЬ: Стек и правила для iSmart Platform -->
+  <TECHNICAL_PROFILE project="iSmart Platform">
+    <TECH_STACK>
+      <LANGUAGE>PHP 8.1+</LANGUAGE>
+      <TEMPLATING>Twig 3.x</TEMPLATING>
+      <DATA_FORMAT>JSON</DATA_FORMAT>
+      <FRONTEND>Vanilla JavaScript (ES6 Modules)</FRONTEND>
+      <STYLING>PostCSS (nested, autoprefixer, cssnano)</STYLING>
+      <BUNDLER>Webpack 5</BUNDLER>
+      <DEPENDENCY_MANAGEMENT>
+        <PHP>Composer</PHP>
+        <JS>npm</JS>
+      </DEPENDENCY_MANAGEMENT>
+    </TECH_STACK>
+    
+    <ENVIRONMENT_CONSTRAINTS>
+      <CONSTRAINT>Проект не использует Docker. Вся разработка и развертывание происходят в "чистой" среде.</CONSTRAINT>
+      <CONSTRAINT>Все изменения вносятся в репозиторий `romanskrypka/ismart-platform`.</CONSTRAINT>
+    </ENVIRONMENT_CONSTRAINTS>
+    
+    <QUALITY_CRITERIA>
+      <CODE_STYLE>PSR-12 для PHP. Валидный JSON. Модульный JavaScript.</CODE_STYLE>
+      <PERFORMANCE>Максимальная оптимизация ассетов (хеширование, минификация). Быстрая загрузка страниц.</PERFORMANCE>
+      <SECURITY>Следование базовым практикам веб-безопасности (экранирование вывода, защита от CSRF, если применимо).</SECURITY>
+    </QUALITY_CRITERIA>
+  </TECHNICAL_PROFILE>
+  
+  <!-- КОНТЕКСТНЫЙ УРОВЕНЬ: Текущая задача -->
+  <CONTEXTUAL_PROFILE>
+    <CURRENT_TASK>
+      <GOAL>Создать полный комплект документационной обвязки для iSmart Platform, адаптировав предоставленные методологии (PCAM, GRACE, FLEX) к текущему PHP/Twig/JSON стеку.</GOAL>
+      <MVP_BOUNDARIES>
+        <INCLUDED>Создание `.cursorrules`, `VISION.md`, `USER_PROFILE.xml`, `DEVELOPMENT_PLAN.md`, `PROJECT_STATE.md`, `TECHNICAL_SPEC.md`, `CONVENTIONS.md`.</INCLUDED>
+        <EXCLUDED>Изменение существующего кода платформы.</EXCLUDED>
+        <EXCLUDED>Добавление новых функциональных возможностей в платформу.</EXCLUDED>
+      </MVP_BOUNDARIES>
+    </CURRENT_TASK>
+    
+    <AI_AUTONOMY_LEVEL>
+      <LEVEL>Medium</LEVEL>
+      <RULES>
+        <RULE>Твоя роль — **методолог и технический писатель**. Ты не пишешь код для этого проекта.</RULE>
+        <RULE>Всегда адаптируй методологии к PHP/Twig/JSON стеку, предоставляя конкретные примеры.</RULE>
+        <RULE>Задавай уточняющие вопросы, если требования не ясны.</RULE>
+        <RULE>Вся создаваемая документация должна храниться в директории `/docs`.</RULE>
+      </RULES>
+    </AI_AUTONOMY_LEVEL>
+  </CONTEXTUAL_PROFILE>
+  
+  <!-- МЕТОДОЛОГИИ: Адаптация для PHP/Twig/JSON -->
+  <METHODOLOGIES>
+    <PCAM>
+      <DESCRIPTION>Целеполагание и планирование. Используется для структурирования работы над проектом.</DESCRIPTION>
+      <RULES>
+        <RULE>Цель (`Purpose`) определяется в `VISION.md`.</RULE>
+        <RULE>Контекст (`Context`) задается данным профилем, `.cursorrules` и существующим кодом.</RULE>
+        <RULE>Действия (`Action`) и Микрошаги (`Microsteps`) определяются в плане задачи.</RULE>
+      </RULES>
+    </PCAM>
+    <GRACE>
+      <DESCRIPTION>Семантическая разметка для улучшения понимания кода ИИ-агентом.</DESCRIPTION>
+      <RULES>
+        <RULE>Контракт модуля (`MODULE_CONTRACT`) создается в виде отдельного `*.contract.md` файла рядом с PHP-классом.</RULE>
+        <RULE>Логические блоки кода (`BLOCK`) размечаются внутри PHP-файлов с помощью комментариев `// BLOCK: ... // END_BLOCK`.</RULE>
+        <RULE>Структурированное логирование (`STRUCTURED_LOGGING`) реализуется через существующий `Logger` с форматом `[LEVEL][Class::Method][Step] Message`.</RULE>
+      </RULES>
+    </GRACE>
+    <FLEX>
+      <DESCRIPTION>Фреймворк для выполнения задач малыми языковыми моделями (SLM). В данном проекте применяется концептуально для выбора правильного подхода к документированию.</DESCRIPTION>
+      <RULES>
+        <RULE>При создании инструкций или примеров (плейбуков) предоставлять несколько четких и разнообразных вариантов.</RULE>
+        <RULE>Оценивать "уверенность" в применимости той или иной методологии к конкретному участку кода.</RULE>
+      </RULES>
+    </FLEX>
+  </METHODOLOGIES>
+</USER_PROFILE>

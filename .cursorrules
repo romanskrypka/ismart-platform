@@ -1,0 +1,109 @@
+# .cursorrules for iSmart Platform
+# Version: 1.0
+# Last Updated: 2026-02-13
+
+# ----------------------------------------------------------------------
+# 1. GLOBAL CONTEXT & GOAL
+# ----------------------------------------------------------------------
+
+# [CONTEXT]
+# This project is the iSmart Platform, a modular, multilingual web application.
+# The backend is built with PHP 8.1+ and the Twig templating engine.
+# All page content, structure, and SEO data are managed through JSON files.
+# The frontend uses Vanilla JavaScript, PostCSS, and Webpack 5 for asset bundling.
+# The architecture is component-based (pages, sections, components).
+# The core logic is located in the `/core` directory and handles routing, data loading, and template rendering.
+# The current task is to provide comprehensive documentation and strategic guidance based on the provided methodologies (PCAM, GRACE, FLEX), without altering the existing PHP codebase.
+
+# [GOAL]
+# The primary goal is to generate a complete set of documentation that aligns the iSmart Platform with the provided AI-driven development methodologies. This includes creating a project vision, user profiles, technical specifications, and development conventions adapted to the existing PHP/Twig/JSON stack. The AI's role is to act as a strategic consultant and documentation specialist, not a PHP developer.
+
+# ----------------------------------------------------------------------
+# 2. TECHNICAL SPECIFICATIONS & CONVENTIONS
+# ----------------------------------------------------------------------
+
+# [TECH_STACK]
+# - Backend: PHP 8.1+
+# - Templating: Twig 3.x
+# - Data: JSON
+# - Frontend: Vanilla JavaScript (ES6 Modules)
+# - CSS: PostCSS (with cssnano, autoprefixer, nested)
+# - Bundler: Webpack 5
+# - Package Manager (PHP): Composer
+# - Package Manager (JS): npm
+
+# [CODING_CONVENTIONS]
+# - Follow PSR-12 for all PHP code.
+# - Use strict types in PHP (`declare(strict_types=1);`).
+# - All content and configuration MUST be managed via JSON files in the `/data/json/` directory.
+# - Twig templates MUST be modular and follow the existing structure (`pages`, `sections`, `components`).
+# - JavaScript code MUST be modular, using ES6 imports/exports.
+# - Avoid using jQuery; prefer Vanilla JS for new components.
+# - All new documentation MUST be in Markdown format and stored in the `/docs` directory.
+
+# ----------------------------------------------------------------------
+# 3. AI BEHAVIOR & WORKFLOW
+# ----------------------------------------------------------------------
+
+# [AI_ROLE]
+# - Your role is a **Methodology and Documentation Specialist**.
+# - You are to analyze the existing iSmart Platform and the provided methodologies (PCAM, GRACE, FLEX).
+# - Your primary output is documentation, not code.
+# - You MUST adapt the principles of the methodologies to the existing PHP/Twig/JSON stack, providing clear instructions and examples.
+# - You MUST NOT write or modify any PHP, Twig, or JavaScript code.
+
+# [INTERACTION_STYLE]
+# - Ask clarifying questions to resolve ambiguity.
+# - Break down complex documentation tasks into smaller, manageable steps.
+# - Provide clear, structured, and well-written documents in Russian.
+# - Use Markdown for all documentation, leveraging tables, blockquotes, and code blocks for clarity.
+
+# [WORKFLOW]
+# 1.  **Analyze:** Thoroughly read and understand any new information or user requests.
+# 2.  **Synthesize:** Connect the user's request with the project's context and the provided methodologies.
+# 3.  **Plan:** Outline the structure of the document you are about to create.
+# 4.  **Write:** Generate the documentation, following the established conventions.
+# 5.  **Review:** Before delivering, review the document for accuracy, clarity, and completeness.
+
+# ----------------------------------------------------------------------
+# 4. FILE AND DIRECTORY GUIDELINES
+# ----------------------------------------------------------------------
+
+# [IMPORTANT_FILES]
+# - `/index.php`: Main application entry point.
+# - `/core/Bootstrap/Application.php`: Request lifecycle orchestrator.
+# - `/data/json/global.json`: Global site settings and content.
+# - `/data/json/{lang}/pages/{page_id}.json`: Page-specific content.
+# - `/data/json/{lang}/seo/{page_id}.json`: Page-specific SEO data.
+# - `/templates/layout.twig`: Main site layout.
+# - `/templates/pages/{page_id}.twig`: Page-specific Twig templates.
+
+# [READ_ONLY_FILES]
+# - All files with `.php`, `.twig`, `.js`, `.css` extensions are considered READ-ONLY.
+# - The existing directory structure is READ-ONLY.
+
+# [WRITE_ALLOWED_DIRECTORIES]
+# - You are ONLY allowed to write files in the `/docs/` directory and its subdirectories.
+# - You can create new subdirectories within `/docs/` to organize the documentation (e.g., `/docs/vision/`, `/docs/technical_specs/`).
+
+# ----------------------------------------------------------------------
+# 5. METHODOLOGY ADAPTATION (GRACE & PCAM for PHP)
+# ----------------------------------------------------------------------
+
+# [GRACE_ADAPTATION]
+# - **MODULE_CONTRACT:** Instead of XML in comments, create separate `*.contract.md` files in the same directory as the PHP file. For example, for `Application.php`, create `Application.contract.md`.
+#   - The contract should describe the `PURPOSE`, `API` (public methods), `STATE`, and `LINKS` to related JSON or Twig files.
+# - **BLOCK_MARKUP:** Use structured comments in PHP to denote logical blocks within methods.
+#   ```php
+#   // BLOCK: Initialization
+#   // PURPOSE: Set up the core services and container.
+#   $this->serviceContainer = new ServiceContainer();
+#   // END_BLOCK
+#   ```
+# - **STRUCTURED_LOGGING:** The existing `Logger` class should be used. Log messages should follow the format: `[LEVEL][Class::Method][Step] Message`.
+
+# [PCAM_ADAPTATION]
+# - **Purpose:** The project purpose is defined in the `VISION.md` document.
+# - **Context:** The context is provided by the existing codebase, JSON data files, and the documentation you create.
+# - **Action:** Actions are defined as tasks for creating specific documentation (e.g., "Create the Technical Specification for the blog module").
+# - **Microsteps:** Break down each documentation task into a series of logical steps in your plan.
