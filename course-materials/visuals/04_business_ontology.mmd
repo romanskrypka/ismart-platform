@@ -1,0 +1,56 @@
+graph TB
+    subgraph ONTOLOGY["🏢 Онтология бизнеса — Граф знаний компании"]
+        
+        subgraph ROLES["Роли"]
+            R1[CEO]
+            R2[CTO]
+            R3[Sales Manager]
+            R4[AI Champion]
+        end
+        
+        subgraph PROCESSES["Процессы"]
+            P1[Обработка лидов]
+            P2[Онбординг]
+            P3[Финансовый контроль]
+            P4[Генерация отчетов]
+        end
+        
+        subgraph DATA["Данные"]
+            D1[CRM]
+            D2[ERP]
+            D3[Документы]
+            D4[Метрики]
+        end
+        
+        subgraph METRICS["Метрики"]
+            M1[Revenue]
+            M2[Conversion Rate]
+            M3[Time-to-Value]
+            M4[Cost per Process]
+        end
+        
+        subgraph VENDORS["Подрядчики"]
+            V1[OpenAI API]
+            V2[Cloud Provider]
+            V3[CRM System]
+        end
+    end
+    
+    R3 -->|владеет| P1
+    R4 -->|оптимизирует| P2
+    P1 -->|использует| D1
+    P2 -->|использует| D2
+    P3 -->|генерирует| D4
+    P4 -->|читает| D4
+    D1 -->|измеряет| M2
+    P1 -->|влияет на| M1
+    P2 -->|измеряется| M3
+    P3 -->|измеряется| M4
+    V1 -->|обеспечивает| P1
+    V3 -->|хранит| D1
+    
+    style ROLES fill:#cce5ff,stroke:#0d6efd
+    style PROCESSES fill:#d4edda,stroke:#28a745
+    style DATA fill:#fff3cd,stroke:#ffc107
+    style METRICS fill:#f8d7da,stroke:#dc3545
+    style VENDORS fill:#e2d9f3,stroke:#6f42c1

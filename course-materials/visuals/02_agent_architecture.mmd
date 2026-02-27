@@ -1,0 +1,44 @@
+graph TB
+    subgraph USER["👤 Пользователь"]
+        INPUT[Запрос / Задача]
+    end
+    
+    subgraph AGENT["🤖 AI-Агент"]
+        PLAN[Planning<br/>Планирование действий]
+        MEM[Memory<br/>Долгосрочная память]
+        TOOLS[Tool Use<br/>Использование инструментов]
+        EXEC[Execution<br/>Выполнение]
+    end
+    
+    subgraph EXTERNAL["🔌 Внешние системы через MCP"]
+        API[API сервисы]
+        DB[Базы данных]
+        FILES[Файловая система]
+        WEB[Веб-ресурсы]
+    end
+    
+    subgraph SKILLS["⚡ Библиотека Skills"]
+        S1[Коммуникация]
+        S2[Аналитика]
+        S3[Управление задачами]
+        S4[Кастомные скиллы]
+    end
+    
+    INPUT --> PLAN
+    PLAN --> MEM
+    MEM --> TOOLS
+    TOOLS --> EXEC
+    EXEC --> API
+    EXEC --> DB
+    EXEC --> FILES
+    EXEC --> WEB
+    TOOLS --> S1
+    TOOLS --> S2
+    TOOLS --> S3
+    TOOLS --> S4
+    EXEC -->|Результат| INPUT
+    
+    style AGENT fill:#e8f4fd,stroke:#0d6efd
+    style EXTERNAL fill:#fff3cd,stroke:#ffc107
+    style SKILLS fill:#d4edda,stroke:#28a745
+    style USER fill:#f0f0f0,stroke:#666

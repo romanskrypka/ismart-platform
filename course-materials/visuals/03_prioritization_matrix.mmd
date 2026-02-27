@@ -1,0 +1,31 @@
+graph TB
+    subgraph MATRIX["Матрица приоритизации процессов"]
+        direction TB
+        
+        subgraph Q1["Quick Wins<br/>Низкая сложность + Высокое влияние"]
+            QW1[Обработка лидов]
+            QW2[Email-рассылки]
+            QW3[Генерация отчетов]
+        end
+        
+        subgraph Q2["Стратегические проекты<br/>Высокая сложность + Высокое влияние"]
+            SP1[Онбординг клиентов]
+            SP2[Финансовый контроль]
+            SP3[Мультиагентный workflow]
+        end
+        
+        subgraph Q3["Заполнение пробелов<br/>Низкая сложность + Низкое влияние"]
+            ZP1[FAQ-бот поддержки]
+            ZP2[Классификация тикетов]
+        end
+        
+        subgraph Q4["Отложить<br/>Высокая сложность + Низкое влияние"]
+            OT1[Полная замена ERP]
+            OT2[Автономный HR]
+        end
+    end
+    
+    style Q1 fill:#d4edda,stroke:#28a745
+    style Q2 fill:#cce5ff,stroke:#0d6efd
+    style Q3 fill:#fff3cd,stroke:#ffc107
+    style Q4 fill:#f8d7da,stroke:#dc3545

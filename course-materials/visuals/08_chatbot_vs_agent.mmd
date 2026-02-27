@@ -1,0 +1,25 @@
+graph LR
+    subgraph LEVEL1["Уровень 1: Чат-бот"]
+        L1[Вопрос → Ответ<br/>Без памяти<br/>Без инструментов<br/>Без контекста]
+    end
+    
+    subgraph LEVEL2["Уровень 2: Ассистент"]
+        L2[Диалог с памятью<br/>Базовый контекст<br/>Простые инструкции<br/>RAG поиск]
+    end
+    
+    subgraph LEVEL3["Уровень 3: Агент"]
+        L3[Планирование<br/>Долгосрочная память<br/>Использование Tools<br/>Автономное исполнение]
+    end
+    
+    subgraph LEVEL4["Уровень 4: Мультиагентная система"]
+        L4[Оркестрация агентов<br/>Межагентная коммуникация<br/>Самообучение<br/>End-to-End автоматизация]
+    end
+    
+    L1 -->|"+Память"| L2
+    L2 -->|"+Tools +Planning"| L3
+    L3 -->|"+Оркестрация"| L4
+    
+    style LEVEL1 fill:#f8d7da,stroke:#dc3545
+    style LEVEL2 fill:#fff3cd,stroke:#ffc107
+    style LEVEL3 fill:#cce5ff,stroke:#0d6efd
+    style LEVEL4 fill:#d4edda,stroke:#28a745

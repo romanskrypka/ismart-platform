@@ -1,0 +1,47 @@
+graph TB
+    subgraph AGENTS["🤖 AI-Агенты"]
+        A1[Агент Продаж]
+        A2[Агент HR]
+        A3[Агент Финансов]
+        A4[Агент Маркетинга]
+    end
+    
+    subgraph RBAC["🔐 RBAC — Управление доступом"]
+        ROLE1[Роль: Sales<br/>CRM: чтение/запись<br/>Финансы: нет доступа]
+        ROLE2[Роль: HR<br/>Персонал: чтение/запись<br/>CRM: нет доступа]
+        ROLE3[Роль: Finance<br/>Финансы: полный доступ<br/>Персонал: только чтение]
+        ROLE4[Роль: Marketing<br/>Аналитика: чтение<br/>Контент: запись]
+    end
+    
+    subgraph SECURITY["🛡️ Слой безопасности"]
+        ANON[Анонимизация<br/>данных]
+        AUDIT[Аудит<br/>действий]
+        ENCRYPT[Шифрование<br/>в транзите]
+    end
+    
+    subgraph DATA["💾 Данные компании"]
+        D1[CRM]
+        D2[HR система]
+        D3[Финансы]
+        D4[Аналитика]
+    end
+    
+    A1 --> ROLE1
+    A2 --> ROLE2
+    A3 --> ROLE3
+    A4 --> ROLE4
+    
+    ROLE1 --> SECURITY
+    ROLE2 --> SECURITY
+    ROLE3 --> SECURITY
+    ROLE4 --> SECURITY
+    
+    SECURITY --> D1
+    SECURITY --> D2
+    SECURITY --> D3
+    SECURITY --> D4
+    
+    style AGENTS fill:#cce5ff,stroke:#0d6efd
+    style RBAC fill:#fff3cd,stroke:#ffc107
+    style SECURITY fill:#f8d7da,stroke:#dc3545
+    style DATA fill:#d4edda,stroke:#28a745

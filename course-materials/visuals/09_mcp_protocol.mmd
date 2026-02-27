@@ -1,0 +1,39 @@
+graph TB
+    subgraph IDE["💻 IDE / Рабочая среда"]
+        CURSOR[Cursor]
+        CLAUDE[Claude Code]
+        CLAW[OpenClaw]
+    end
+    
+    subgraph MCP["🔗 Model Context Protocol"]
+        SERVER[MCP Server<br/>Унифицированный интерфейс]
+        TOOLS_REG[Реестр инструментов]
+        AUTH[Аутентификация]
+    end
+    
+    subgraph SERVICES["🌐 Внешние сервисы"]
+        S1[Google Drive]
+        S2[Slack]
+        S3[Jira / Asana]
+        S4[PostgreSQL]
+        S5[REST API]
+        S6[GitHub]
+    end
+    
+    CURSOR --> SERVER
+    CLAUDE --> SERVER
+    CLAW --> SERVER
+    
+    SERVER --> TOOLS_REG
+    SERVER --> AUTH
+    
+    TOOLS_REG --> S1
+    TOOLS_REG --> S2
+    TOOLS_REG --> S3
+    TOOLS_REG --> S4
+    TOOLS_REG --> S5
+    TOOLS_REG --> S6
+    
+    style IDE fill:#e8f4fd,stroke:#0d6efd
+    style MCP fill:#fff3cd,stroke:#ffc107
+    style SERVICES fill:#d4edda,stroke:#28a745

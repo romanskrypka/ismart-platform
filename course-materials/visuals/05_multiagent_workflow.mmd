@@ -1,0 +1,44 @@
+graph LR
+    subgraph INPUT["📥 Входящий запрос"]
+        IN[Email / Форма / API]
+    end
+    
+    subgraph CLASSIFY["1. Classify — Классификация"]
+        CA[Агент-Классификатор<br/>Определяет тип запроса<br/>и приоритет]
+    end
+    
+    subgraph ROUTE["2. Route — Маршрутизация"]
+        RA[Агент-Маршрутизатор<br/>Направляет к нужному<br/>исполнителю]
+    end
+    
+    subgraph EXECUTE["3. Execute — Исполнение"]
+        EA1[Агент Продаж<br/>Обработка лида]
+        EA2[Агент Поддержки<br/>Решение тикета]
+        EA3[Агент Финансов<br/>Проверка платежа]
+    end
+    
+    subgraph FEEDBACK["4. Feedback — Обратная связь"]
+        FA[Агент Качества<br/>Оценка результата<br/>и самообучение]
+    end
+    
+    subgraph OUTPUT["📤 Результат"]
+        OUT[Ответ клиенту /<br/>Обновление CRM /<br/>Уведомление]
+    end
+    
+    IN --> CA
+    CA --> RA
+    RA --> EA1
+    RA --> EA2
+    RA --> EA3
+    EA1 --> FA
+    EA2 --> FA
+    EA3 --> FA
+    FA --> OUT
+    FA -->|Корректировка| CA
+    
+    style CLASSIFY fill:#cce5ff,stroke:#0d6efd
+    style ROUTE fill:#fff3cd,stroke:#ffc107
+    style EXECUTE fill:#d4edda,stroke:#28a745
+    style FEEDBACK fill:#f8d7da,stroke:#dc3545
+    style INPUT fill:#f0f0f0,stroke:#666
+    style OUTPUT fill:#f0f0f0,stroke:#666
