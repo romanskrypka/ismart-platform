@@ -2,9 +2,9 @@ import { dashboards } from '@/lib/dashboardData';
 import Header from '@/components/Header';
 import { Link } from 'wouter';
 import { motion } from 'framer-motion';
-import { ArrowRight, BookOpen, Cpu, Database, Code2, Wrench, Bot } from 'lucide-react';
+import { ArrowRight, BookOpen, Cpu, Database, Code2, Wrench, Bot, Settings, Zap, Eye } from 'lucide-react';
 
-const moduleIcons = [BookOpen, Cpu, Database, Code2, Wrench, Bot];
+const moduleIcons = [BookOpen, Cpu, Database, Code2, Wrench, Bot, Settings, Zap, Eye];
 
 export default function Home() {
   return (
@@ -48,10 +48,10 @@ export default function Home() {
             className="mt-12 flex flex-wrap gap-8"
           >
             {[
-              { value: '6', label: 'Модулей' },
-              { value: '50+', label: 'Разделов' },
-              { value: '12', label: 'Квизов' },
-              { value: '15+', label: 'Примеров кода' },
+              { value: '9', label: 'Модулей' },
+              { value: '80+', label: 'Разделов' },
+              { value: '18', label: 'Квизов' },
+              { value: '25+', label: 'Примеров кода' },
             ].map((stat) => (
               <div key={stat.label} className="flex items-baseline gap-2">
                 <span className="font-[var(--font-display)] text-3xl font-bold text-foreground">{stat.value}</span>
